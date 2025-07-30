@@ -1,0 +1,5 @@
+node_modules/
+.env
+tmp.js
+/src/data/firstLevelDirectories.json
+ReadMe.md

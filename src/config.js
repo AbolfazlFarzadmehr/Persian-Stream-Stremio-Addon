@@ -1,0 +1,19 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+export const mirrors = process.env.DONYAYE_SERIAL_MIRRORS?.split(',') || [];
+export const domain = process.env.DONYAYE_SERIAL_IRAN_ACC_DOMAIN || '';
+export const film2mediaBaseUrl = process.env.FILM2MEDIA_BASE_URL || '';
+export const getMetaBaseUrl = process.env.GET_META_BASE_URL || '';
+export const port = process.env.PORT || 50080;
+export const id = process.env.ID || '';
+export const logo = process.env.LOGO || '';
+export const name = process.env.NAME || '';
+export const version = process.env.VERSION || '';
+export const description = process.env.DESCRIPTION || '';
+export const serverUrl = process.env.SERVER_URL || '';
+export const donyayeSerialBaseUrl = process.env.DONYAYE_SERIAL_BASE_URL || '';
+export const iranProviderBaseUrl = process.env.IRAN_PROVIDER_BASE_URL || '';
+export const ipApiUrl = process.env.IP_API_URL || '';
+export const ipApiFields = process.env.IP_API_FIELDS || '';
+export const nodeEnv = process.env.NODE_ENV || 'production';
