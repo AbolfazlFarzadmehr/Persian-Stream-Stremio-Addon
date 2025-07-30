@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import * as cheerio from 'cheerio';
+import getSizeOfArrLinks from '../../utils/getFileSize.js';
 
 export default async function getMkvLinks(pageAddress, type, season, episode) {
   try {
@@ -19,12 +20,13 @@ export default async function getMkvLinks(pageAddress, type, season, episode) {
       }
     });
     const trailer = $('video').first().attr('src');
-    trailer && mkvLinks.push({ url: trailer });
-    return mkvLinks;
+    const sizeAdded = await getSizeOfArrLinks(mkvLinks);
+    trailer && sizeAdded.push({ url: trailer });
+    return sizeAdded;
   } catch (err) {
     console.error(
       `Failed to get links from Page address in film2media: ${err.message}`,
     );
-    return [];
+    return {};
   }
 }

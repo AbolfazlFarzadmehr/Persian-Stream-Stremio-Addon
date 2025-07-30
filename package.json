@@ -1,6 +1,6 @@
 {
-  "name": "Persian-Stream",
-  "version": "1.0.0",
+  "name": "persian-stream",
+  "version": "1.0.1",
   "description": "Streams movies from Persian sources like DonyayeSerial",
   "scripts": {
     "start": "cross-env NODE_ENV=production node server.js"
