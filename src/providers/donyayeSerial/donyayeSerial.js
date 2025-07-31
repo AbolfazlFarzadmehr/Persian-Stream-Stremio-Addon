@@ -6,10 +6,10 @@ import formatTitleForLinks from './formatTitleForLinks.js';
 import getMkvsFromAbroad from './getMkvsFromAbroad.js';
 import mkvFinder from './mkvFinder.js';
 import pingPath from './pingPath.js';
+import Provider from '../Provider.js';
+import { DonyayeSerial } from '../../models/providersModels.js';
 
-const donyayeSeryal = {
-  name: 'Donyaye-serial',
-  BASE_URL: donyayeSerialBaseUrl,
+const methods = {
   getAllMkvLinks,
   getStreamFromIranAccess,
   getStreamsFromAbroad,
@@ -18,5 +18,13 @@ const donyayeSeryal = {
   pingPath,
   mkvFinder,
 };
+
+const donyayeSeryal = new Provider(
+  'Donyaye-serial',
+  'iranAccess',
+  DonyayeSerial,
+  donyayeSerialBaseUrl,
+  methods,
+);
 
 export default donyayeSeryal;

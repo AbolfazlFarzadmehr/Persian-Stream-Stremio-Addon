@@ -8,9 +8,9 @@ export default async function getAllMkvLinks({
 }) {
   try {
     const pageAddress = await this.getPageAddress(imdbId);
+    console.log({ pageAddress });
     if (!pageAddress) return { mkvLinks: [], provider: this.name };
     const mkvLinks = await this.getMkvLinks(pageAddress, type, season, episode);
-    nodeEnv === 'development' && console.log({ mkvLinks });
     return { mkvLinks, provider: this.name };
   } catch (err) {
     console.error(`Failed to create mkvLinks in film2media: ${err.message}`);

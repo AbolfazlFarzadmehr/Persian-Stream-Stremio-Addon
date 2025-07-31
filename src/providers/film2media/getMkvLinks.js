@@ -22,6 +22,7 @@ export default async function getMkvLinks(pageAddress, type, season, episode) {
     const trailer = $('video').first().attr('src');
     const sizeAdded = await getSizeOfArrLinks(mkvLinks);
     trailer && sizeAdded.push({ url: trailer });
+    console.log({ sizeAdded });
     return sizeAdded;
   } catch (err) {
     console.error(

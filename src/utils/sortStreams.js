@@ -1,8 +1,8 @@
 const sortRanks = [
+  'teaser',
   'trailer',
   'dubbed',
-  'farsisub',
-  'softsub',
+  'sub',
   'bluray',
   'webdl',
   'webrip',
@@ -26,5 +26,8 @@ export default function sortStreams(a, b) {
     if (aHas && !bHas) return -1;
     else if (!aHas && bHas) return 1;
   }
-  return aTitle.localeCompare(bTitle);
+  const aSize = Number.parseFloat(aTitle.split(' - ').at(-1).trim());
+
+  const bSize = Number.parseFloat(bTitle.split(' - ').at(-1).trim());
+  return bSize - aSize;
 }

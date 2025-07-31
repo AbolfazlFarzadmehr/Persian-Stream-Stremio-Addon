@@ -1,13 +1,22 @@
 #!/usr/bin/env node
 
 // import addonSdk from 'stremio-addon-sdk';
-import { port, serverUrl } from './src/config.js';
+import { port, serverUrl, dataBase, dataBasePassword } from './src/config.js';
+import mongoose from 'mongoose';
 import addon from './src/addon.js';
 // import './src/providers/donyaye-serial/getFirstLevelDir.js';
 
+process.on('uncaughtExeption', (err) => {
+  console.log(err.name, err.message);
+  console.log('UNCAUGHT EXEPTION! SHUTING DOWN...');
+  process.exit(1);
+});
+
 // const { publishToCentral } = addonSdk;
 
-addon.listen(port, () =>
+const db = dataBase.replace('<DB_PASSWORD>', dataBasePassword);
+
+const server = addon.listen(port, () =>
   console.log(
     `HTTP addon accessible at: http://127.0.0.1:${port}/manifest.json`,
   ),
@@ -18,3 +27,19 @@ addon.listen(port, () =>
 //   .catch((err) => {
 //     console.error('Failed to publish to central:', err);
 //   });
+
+(async () => {
+  try {
+    await mongoose.connect(db, {});
+    console.log('DB connection successfull!');
+  } catch (err) {
+    console.log(`there was an error connecting to database:\n${err}`);
+    server.close(() => process.exit(1));
+  }
+})();
+
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  console.log('UNHANDELD REGECTION! SHUTING DOWN...');
+  server.close(() => process.exit(1));
+});

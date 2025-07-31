@@ -32,7 +32,6 @@ export default async function getAllMkvLinks({
     //   costumIds.map((id) => this.getMkvLinks(type, id)),
     // );
     // const mkvLinks = streamsArrays.flat();
-    nodeEnv === 'development' && console.log({ mkvLinks });
     return { mkvLinks, provider: this.name };
   } catch (err) {
     console.error(`Failed to create mkvLinks in iranProvider: ${err.message}`);

@@ -17,3 +17,5 @@ export const iranProviderBaseUrl = process.env.IRAN_PROVIDER_BASE_URL || '';
 export const ipApiUrl = process.env.IP_API_URL || '';
 export const ipApiFields = process.env.IP_API_FIELDS || '';
 export const nodeEnv = process.env.NODE_ENV || 'production';
+export const dataBase = process.env.DATABASE;
+export const dataBasePassword = process.env.DATABASE_PASSWORD;

@@ -1,9 +1,11 @@
-import iranProvider from './providers/iranProvider/iranProvider.js';
 import setTitle from './utils/setTitle.js';
 import getMeta from './utils/getMeta.js';
 import sortStreams from './utils/sortStreams.js';
-import film2media from './providers/film2media/film2media.js';
 import { nodeEnv } from './config.js';
+import createDocForMovie from './utils/createDocForMovie.js';
+import providers from './providers/groupByTypeProviders.js';
+
+const [publicProviders, iranAccessProviders, iranBlockProviders] = providers;
 
 export default async function createStreams(
   type,
@@ -11,6 +13,33 @@ export default async function createStreams(
   reqFromIran = false,
   appRunInIran = true,
 ) {
+  //checking database
+  const geoProviders =
+    nodeEnv === 'production'
+      ? reqFromIran
+        ? iranAccessProviders
+        : iranBlockProviders
+      : iranAccessProviders;
+  const getDocCallback = async (provider) => ({
+    provider,
+    doc: await provider.mongoModel.findOne({ stremioId: id }),
+  });
+  const resault = await Promise.all(
+    [geoProviders.map(getDocCallback), publicProviders.map(getDocCallback)]
+      .filter((promise) => promise)
+      .flat(),
+  );
+  const groupedByResault = Object.groupBy(resault, ({ doc }) =>
+    doc ? 'complite' : 'scrape',
+  );
+  let streams =
+    groupedByResault.complite
+      ?.flatMap(({ doc }) => doc.streams)
+      .sort(sortStreams) || [];
+  nodeEnv === 'development' && console.log(groupedByResault);
+  if (!groupedByResault.scrape) return streams;
+
+  //creating streams
   const [imdbId, season, episode] = id.split(':');
   const {
     meta: { name, year },
@@ -23,16 +52,18 @@ export default async function createStreams(
     season,
     episode,
   };
-  let mkvLinks = [];
-  if (nodeEnv === 'development') {
-    console.log(info);
-    mkvLinks = await film2media.getAllMkvLinks(info);
-  } else {
-    mkvLinks = await (reqFromIran
-      ? film2media.getAllMkvLinks(info)
-      : iranProvider.getAllMkvLinks(info));
-  }
 
-  const streams = setTitle(mkvLinks, info).sort(sortStreams);
-  return streams;
+  const provider = groupedByResault.scrape[0].provider;
+
+  nodeEnv === 'development' &&
+    console.log(`getting streams from ${provider.name}...`);
+  const mkvLinks = await provider.getAllMkvLinks(info);
+  const scrapeResault = setTitle(mkvLinks, info).sort(sortStreams);
+  nodeEnv === 'development' && console.log({ scrapeResault });
+  if (type === 'movie')
+    createDocForMovie(provider.mongoModel, scrapeResault, info);
+  streams = [...streams, ...scrapeResault];
+
+  nodeEnv === 'development' && console.log({ finalStreams: streams });
+  return streams.sort(sortStreams);
 }

@@ -1,5 +1,5 @@
 import express from 'express';
-import { id, logo, name, version, description } from './config.js';
+import { id, logo, name, version, description, nodeEnv } from './config.js';
 import createStreams from './createStreams.js';
 import isFromIran from './utils/isFromIran.js';
 
@@ -45,13 +45,14 @@ addon.param('id', function (req, res, next, val) {
   }
 });
 
-addon.use(async (req, res, next) => {
-  const clientIp =
-    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-    req.socket?.remoteAddress;
-  req.isFromIran = await isFromIran(clientIp);
-  next();
-});
+nodeEnv === 'production' &&
+  addon.use(async (req, res, next) => {
+    const clientIp =
+      req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      req.socket?.remoteAddress;
+    req.isFromIran = await isFromIran(clientIp);
+    next();
+  });
 
 addon.get('/stream/:type/:id.json', async function (req, res, next) {
   const { type, id } = req.params;

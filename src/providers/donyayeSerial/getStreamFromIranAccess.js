@@ -3,7 +3,9 @@ import path from 'path';
 import { readFile } from 'fs/promises';
 import { mirrors, domain } from '../../config.js';
 import formatTitleForFilename from '../../utils/formatTitleForFilename.js';
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const filePath = `${__dirname}/../../data/firstLevelDirectories.json`;
 export default async function getStreamFromIranAccess({
   name,
   type,
@@ -12,9 +14,6 @@ export default async function getStreamFromIranAccess({
   season,
   episode,
 }) {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const filePath = `${__dirname}/../../data/firstLevelDirectories.json`;
   const fileData = await readFile(filePath, 'utf-8');
   const directories = JSON.parse(fileData);
   const formattedTitle = formatTitleForFilename(name);

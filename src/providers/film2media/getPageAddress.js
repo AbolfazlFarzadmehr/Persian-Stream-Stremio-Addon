@@ -10,7 +10,6 @@ export default async function getPageAddress(imdbId) {
     const html = await res.text();
     const $ = cheerio.load(html);
     const pageAddress = $('a').first().attr('href');
-    nodeEnv === 'development' && console.log({ pageAddress });
     return pageAddress;
   } catch (err) {
     console.error(`Failed to get page address: ${err.message}`);
