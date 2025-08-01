@@ -22,7 +22,7 @@ const stremioDocShema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required: [true, 'A stremio document should have a name'],
+    default: 'Unknown',
   },
   streams: {
     type: [streamSchema],

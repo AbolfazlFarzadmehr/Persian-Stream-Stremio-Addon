@@ -20,14 +20,15 @@ export default async function getMkvsFromAbroad({ titleParam, type, imdbId }) {
       )
         links.push(href);
     });
-    // if (type === 'movie') return links;
+    if (type === 'movie') return links;
     // links.forEach(async (link) => {
     //   const res = await fetch(link, { method: 'HEAD' });
     // });
-    return links;
+    return [];
   } catch (err) {
     console.error(
       `Failed to fetch mkvs from ${this.BASE_URL}/${titleParam}: ${err.message}`,
     );
+    return { err };
   }
 }

@@ -8,6 +8,7 @@ export default async function getCustomId(
   const isPeep = provider === 'peepboxtv';
   const url = `${this.BASE_URL}/catalog/${type}/${provider}/search=${isPeep ? encodeURIComponent(name) : imdbId}.json`;
   try {
+    if (isPeep && !name) throw new Error('name and year are not defined.');
     const res = await fetch(url);
     nodeEnv === 'development' && console.log(`getting from ${url}`);
     const data = await res.json();
@@ -28,6 +29,6 @@ export default async function getCustomId(
     return providerMovieId ? `${providerMovieId}___${stremioId}` : undefined;
   } catch (err) {
     console.error(`Failed to fetch from  ${url}: ${err.message}`);
-    return undefined;
+    return { err };
   }
 }

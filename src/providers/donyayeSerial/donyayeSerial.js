@@ -1,6 +1,6 @@
 import { donyayeSerialBaseUrl } from '../../config.js';
 import getAllMkvLinks from './getAllMkvLinks.js';
-import getStreamFromIranAccess from './getStreamFromIranAccess.js';
+import getStreamFromIran from './getStreamFromIran.js';
 import getStreamsFromAbroad from './getStreamsFromAbroad.js';
 import formatTitleForLinks from './formatTitleForLinks.js';
 import getMkvsFromAbroad from './getMkvsFromAbroad.js';
@@ -11,7 +11,7 @@ import { DonyayeSerial } from '../../models/providersModels.js';
 
 const methods = {
   getAllMkvLinks,
-  getStreamFromIranAccess,
+  getStreamFromIran,
   getStreamsFromAbroad,
   formatTitleForLinks,
   getMkvsFromAbroad,

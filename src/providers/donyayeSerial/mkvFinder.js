@@ -47,11 +47,11 @@ async function mkvFinder(url, type, season, episode, results = []) {
     });
 
     await Promise.all(tasks);
+    return results;
   } catch (err) {
     console.error(`Failed to crawl ${url}: ${err.message}`);
+    return [];
   }
-
-  return results;
 }
 
 export default mkvFinder;

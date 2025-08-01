@@ -13,7 +13,7 @@ const manifest = {
   catalogs: [],
   resources: ['stream'],
   types: ['movie', 'series'],
-  name,
+  name: nodeEnv === 'development' ? 'test stream' : name,
   description,
   idPrefixes: ['tt'],
 };
@@ -57,8 +57,17 @@ nodeEnv === 'production' &&
 addon.get('/stream/:type/:id.json', async function (req, res, next) {
   const { type, id } = req.params;
   const streams = await createStreams(type, id, req.isFromIran);
+  if (streams.err)
+    return respond(res, {
+      streams: [
+        {
+          title: '❌ There was an error in getting streams. please try again.',
+          url: '',
+        },
+      ],
+    });
 
-  respond(res, { streams: streams });
+  respond(res, { streams });
 });
 
 export default addon;

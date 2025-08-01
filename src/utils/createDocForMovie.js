@@ -16,13 +16,15 @@ export default async function createDocForMovie(
   try {
     let doc = {};
     const currentYear = new Date().getFullYear();
+    const releasedYear = year ? +year : currentYear + 1000;
     if (
       !streams.length ||
       (streams.length === 1 &&
         (streams[0].title.toLowerCase().includes('trailer') ||
           streams[0].title.toLowerCase().includes('teaser')))
     ) {
-      const expireForEmptyStr = +year < currentYear - 1 ? undefined : 5 * day;
+      const expireForEmptyStr =
+        releasedYear < currentYear - 1 ? undefined : 5 * day;
       nodeEnv === 'development' &&
         nodeEnv === 'development' &&
         expireForEmptyStr &&
@@ -33,7 +35,7 @@ export default async function createDocForMovie(
         stremioId: imdbId,
         name,
         streams,
-        releasedYear: +year,
+        releasedYear,
         expireAt: expireForEmptyStr
           ? Date.now() + expireForEmptyStr
           : undefined,
@@ -51,7 +53,7 @@ export default async function createDocForMovie(
       }
     }
     const expireIn =
-      +year < currentYear - 1
+      releasedYear < currentYear - 1
         ? undefined
         : quality
           ? qualityExpire[quality]
@@ -67,12 +69,13 @@ export default async function createDocForMovie(
       name,
       streams,
       quality,
-      releasedYear: +year,
+      releasedYear,
       expireAt: expireIn ? Date.now() + expireIn : undefined,
     };
     nodeEnv === 'development' && console.log({ docToSave: doc });
     await Model.create(doc);
   } catch (err) {
     console.error(`Failed to create document in mongoDB: ${err.message}`);
+    return { err };
   }
 }

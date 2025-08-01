@@ -14,14 +14,20 @@ export default async function getAllMkvLinks({
     const info = { name, type, year, stremioId, imdbId };
     let mkvLinks = [];
     let costumId = await this.getCustomId(info, 'avamovie');
+    if (costumId?.err) throw new Error(costumId.err.message);
     costumId && (mkvLinks = await this.getMkvLinks(type, costumId));
+    if (mkvLinks.err) throw new Error(mkvLinks.err.message);
     const isDubbed = mkvLinks.some((link) =>
       link.url.toLowerCase().includes('dubbed'),
     );
     if (!isDubbed) {
       costumId = await this.getCustomId(info, 'peepboxtv');
-      costumId &&
-        (mkvLinks = [...mkvLinks, ...(await this.getMkvLinks(type, costumId))]);
+      if (costumId?.err) throw new Error(costumId.err.message);
+      else if (costumId) {
+        const newMkvLinks = await this.getMkvLinks(type, costumId);
+        if (newMkvLinks.err) throw new Error(mkvLinks.err.message);
+        mkvLinks = [...mkvLinks, ...newMkvLinks];
+      }
     }
     // const costumIds = [
     //   await this.getCustomId(info, 'avamovie'),
@@ -35,6 +41,6 @@ export default async function getAllMkvLinks({
     return { mkvLinks, provider: this.name };
   } catch (err) {
     console.error(`Failed to create mkvLinks in iranProvider: ${err.message}`);
-    return { mkvLinks: [], provider: this.name };
+    return { mkvLinks: [], provider: this.name, err };
   }
 }

@@ -11,6 +11,6 @@ export default async function getMkvLinks(type, customId) {
     return mkvLinks;
   } catch (err) {
     console.error(`Failed to get mkvLinks: ${err.message}`);
-    return [];
+    return { err };
   }
 }

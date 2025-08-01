@@ -8,6 +8,6 @@ export default async function isFromIran(ip) {
     return data.countryCode === 'IR';
   } catch (err) {
     console.error(`failed to detect the location of the ${ip}: ${err.message}`);
-    return false;
+    return { err };
   }
 }

@@ -1,5 +1,3 @@
-import { nodeEnv } from '../../config.js';
-
 export default async function getAllMkvLinks({
   type,
   imdbId,
@@ -8,12 +6,11 @@ export default async function getAllMkvLinks({
 }) {
   try {
     const pageAddress = await this.getPageAddress(imdbId);
-    console.log({ pageAddress });
-    if (!pageAddress) return { mkvLinks: [], provider: this.name };
+    if (pageAddress?.err) throw new Error(pageAddress.err.message);
     const mkvLinks = await this.getMkvLinks(pageAddress, type, season, episode);
     return { mkvLinks, provider: this.name };
   } catch (err) {
     console.error(`Failed to create mkvLinks in film2media: ${err.message}`);
-    return { mkvLinks: [], provider: this.name };
+    return { mkvLinks: [], provider: this.name, err };
   }
 }

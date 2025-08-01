@@ -11,15 +11,19 @@ async function getFileSize(url) {
     return `${(sizeInMB / 1000).toFixed(2)} GB`;
   } catch (err) {
     console.error(`Faile to measure the size of the link: ${err.message}`);
-    return undefined;
+    return { err };
   }
 }
 
 export default async function getSizeOfArrLinks(arrLink) {
   return Promise.all(
-    arrLink.map(async (strObj) => ({
-      ...strObj,
-      size: await getFileSize(strObj.url),
-    })),
+    arrLink.map(async (strObj) => {
+      const size = await getFileSize(strObj.url);
+      if (!size || size?.err) return strObj;
+      return {
+        ...strObj,
+        size,
+      };
+    }),
   );
 }

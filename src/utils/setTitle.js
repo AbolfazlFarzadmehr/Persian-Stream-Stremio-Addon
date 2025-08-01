@@ -10,7 +10,7 @@ export default function setTitle(
       exampleLinkInSetTitle: mkvProviderLinks.mkvLinks[0],
       provider: mkvProviderLinks.provider,
     });
-  const formattedTitle = formatTitleForFilename(name);
+  const formattedTitle = name ? formatTitleForFilename(name) : '%$!';
   const sortKeywords = ['sub', 'dubbed'];
   const omitKeywords = [
     '.mkv',
