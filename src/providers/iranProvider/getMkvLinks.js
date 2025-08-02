@@ -10,7 +10,8 @@ export default async function getMkvLinks(type, customId) {
     const mkvLinks = await getSizeOfArrLinks(
       data.streams.filter((str) => str.url),
     );
-    console.log({ mkvLinksInGetMkvLinks: mkvLinks });
+    nodeEnv === 'development' &&
+      console.log({ mkvLinksInGetMkvLinks: mkvLinks });
 
     return mkvLinks;
   } catch (err) {

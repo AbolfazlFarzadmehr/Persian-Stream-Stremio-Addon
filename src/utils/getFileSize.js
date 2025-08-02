@@ -18,20 +18,28 @@ async function getFileSize(url) {
 }
 
 export default async function getSizeOfArrLinks(arrLink) {
-  return Promise.all(
-    arrLink.map(async (strObj, i, arr) => {
-      if (i === arr.length - 1) {
-        const urlToLower = strObj.url?.toLowerCase();
-        nodeEnv === 'development' && console.log({ urlToLower });
-        if (urlToLower?.includes('trailer') || urlToLower?.includes('teaser'))
-          return strObj;
-      }
-      const size = await getFileSize(strObj.url);
-      if (!size || size.err) return strObj;
-      return {
-        ...strObj,
-        size,
-      };
-    }),
-  );
+  try {
+    nodeEnv === 'development' && console.log({ arrLink });
+    if (arrLink.err?.code === 'ERR_INVALID_URL') return [];
+    if (!Array.isArray(arrLink)) throw new Error(`${arrLink} is not an array`);
+    return Promise.all(
+      arrLink.map(async (strObj, i, arr) => {
+        if (i === arr.length - 1) {
+          const urlToLower = strObj.url?.toLowerCase();
+          nodeEnv === 'development' && console.log({ urlToLower });
+          if (urlToLower?.includes('trailer') || urlToLower?.includes('teaser'))
+            return strObj;
+        }
+        const size = await getFileSize(strObj.url);
+        if (!size || size.err) return strObj;
+        return {
+          ...strObj,
+          size,
+        };
+      }),
+    );
+  } catch (err) {
+    console.error(`Failed to add sizes to stream objects: ${err.message}`);
+    return { err };
+  }
 }

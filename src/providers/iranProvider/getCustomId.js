@@ -15,7 +15,7 @@ export default async function getCustomId(
     nodeEnv === 'development' && console.log({ searchResaults: data.metas });
     const providerMovieId = isPeep
       ? data.metas.find((meta) => {
-          const peepboxName = meta.name.split('/')[1].trim();
+          const peepboxName = meta.name.split('/')[1]?.trim() || meta.name;
           nodeEnv === 'development' &&
             console.log({
               metaName: meta.name,
