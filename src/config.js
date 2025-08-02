@@ -19,3 +19,6 @@ export const ipApiFields = process.env.IP_API_FIELDS || '';
 export const nodeEnv = process.env.NODE_ENV || 'production';
 export const dataBase = process.env.DATABASE;
 export const dataBasePassword = process.env.DATABASE_PASSWORD;
+export const proxyBaseUrl = process.env.PROXY_BASE_URL;
+export const film2mediaProxyPath = process.env.FILM2MEDIA_PROXY_PATH;
+export const proxySecret = process.env.PROXY_SECRET;

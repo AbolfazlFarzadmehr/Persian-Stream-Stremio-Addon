@@ -65,6 +65,7 @@ export default function setTitle(
     return {
       title,
       url: mkv.url,
+      size: mkv.size,
     };
   });
 }

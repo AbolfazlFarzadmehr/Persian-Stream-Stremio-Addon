@@ -13,7 +13,7 @@ const manifest = {
   catalogs: [],
   resources: ['stream'],
   types: ['movie', 'series'],
-  name: nodeEnv === 'development' ? 'test stream' : name,
+  name,
   description,
   idPrefixes: ['tt'],
 };

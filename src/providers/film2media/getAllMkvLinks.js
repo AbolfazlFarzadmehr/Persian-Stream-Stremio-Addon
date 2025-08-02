@@ -1,3 +1,12 @@
+import fetch from 'node-fetch';
+import {
+  proxyBaseUrl,
+  film2mediaProxyPath,
+  proxySecret,
+} from '../../config.js';
+import getSizeOfArrLinks from '../../utils/getFileSize.js';
+import providers from '../groupByTypeProviders.js';
+
 export default async function getAllMkvLinks({
   type,
   imdbId,
@@ -5,12 +14,20 @@ export default async function getAllMkvLinks({
   episode,
 }) {
   try {
-    const pageAddress = await this.getPageAddress(imdbId);
-    if (pageAddress?.err) throw new Error(pageAddress.err.message);
-    const mkvLinks = await this.getMkvLinks(pageAddress, type, season, episode);
-    return { mkvLinks, provider: this.name };
+    const info =
+      type === 'movie'
+        ? `${type}:${imdbId}`
+        : `${type}:${imdbId}:${season}:${episode}`;
+    const res = await fetch(`${proxyBaseUrl}/${film2mediaProxyPath}/${info}`, {
+      headers: {
+        'x-proxy-auth': proxySecret,
+      },
+    });
+    const data = await res.json();
+    const sizeAdded = await getSizeOfArrLinks(data.mkvLinks);
+    return { mkvLinks: sizeAdded, provider: this.name };
   } catch (err) {
-    console.error(`Failed to create mkvLinks in film2media: ${err.message}`);
+    console.error(`Failed to get mkvLinks from proxy server: ${err.message}`);
     return { mkvLinks: [], provider: this.name, err };
   }
 }

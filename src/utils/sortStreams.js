@@ -26,8 +26,7 @@ export default function sortStreams(a, b) {
     if (aHas && !bHas) return -1;
     else if (!aHas && bHas) return 1;
   }
-  const aSize = Number.parseFloat(aTitle.split(' - ').at(-1).trim());
-
-  const bSize = Number.parseFloat(bTitle.split(' - ').at(-1).trim());
+  const aSize = Number.parseFloat(a.size || 0);
+  const bSize = Number.parseFloat(b.size || 0);
   return bSize - aSize;
 }

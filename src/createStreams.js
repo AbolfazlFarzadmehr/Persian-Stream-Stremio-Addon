@@ -1,9 +1,10 @@
 import setTitle from './utils/setTitle.js';
 import getMeta from './utils/getMeta.js';
-import sortStreams from './utils/sortStreams.js';
 import { nodeEnv } from './config.js';
-import createDocForMovie from './utils/createDocForMovie.js';
 import providers from './providers/groupByTypeProviders.js';
+import createDocForMovie from './utils/createDocForMovie.js';
+import sortStreams from './utils/sortStreams.js';
+import getDocFromDB from './utils/getDocFromDB.js';
 
 const [publicProviders, iranAccessProviders, iranBlockProviders] = providers;
 
@@ -15,32 +16,11 @@ export default async function createStreams(
 ) {
   try {
     //checking database
-    const geoProviders =
-      nodeEnv === 'production'
-        ? reqFromIran?.err
-          ? []
-          : reqFromIran
-            ? iranAccessProviders
-            : iranBlockProviders
-        : iranAccessProviders;
-    const getDocCallback = async (provider) => ({
-      provider,
-      doc: await provider.mongoModel.findOne({ stremioId: id }),
-    });
-    const resault = await Promise.all(
-      [geoProviders.map(getDocCallback), publicProviders.map(getDocCallback)]
-        .filter((promise) => promise)
-        .flat(),
-    );
-    const groupedByResault = Object.groupBy(resault, ({ doc }) =>
-      doc ? 'complite' : 'scrape',
-    );
+    const groupedByResault = await getDocFromDB(reqFromIran, id);
     let streams =
-      groupedByResault.complite
-        ?.flatMap(({ doc }) => doc.streams)
-        .sort(sortStreams) || [];
+      groupedByResault.complite?.flatMap(({ doc }) => doc.streams) || [];
     nodeEnv === 'development' && console.log(groupedByResault);
-    if (!groupedByResault.scrape) return streams;
+    if (!groupedByResault.scrape) return streams.sort(sortStreams);
 
     //creating streams
     const [imdbId, season, episode] = id.split(':');
@@ -57,18 +37,24 @@ export default async function createStreams(
     };
     nodeEnv === 'development' && console.log(info);
 
-    const provider = groupedByResault.scrape[0].provider;
-
-    nodeEnv === 'development' &&
-      console.log(`getting streams from ${provider.name}...`);
-    const mkvLinks = await provider.getAllMkvLinks(info);
-    if (mkvLinks.err) throw new Error(mkvLinks.err.message);
-    const scrapeResault = setTitle(mkvLinks, info).sort(sortStreams);
-    // nodeEnv === 'development' && console.log({ scrapeResault });
-    if (type === 'movie')
-      createDocForMovie(provider.mongoModel, scrapeResault, info);
+    let scrapeResault = [];
+    for (const { provider } of groupedByResault.scrape) {
+      nodeEnv === 'development' &&
+        console.log(`getting streams from ${provider.name}...`);
+      const mkvProviderLinks = await provider.getAllMkvLinks(info);
+      if (mkvProviderLinks.err) continue;
+      scrapeResault = setTitle(mkvProviderLinks, info);
+      nodeEnv === 'development' && console.log({ scrapeResault });
+      if (!iranBlockProviders.includes(provider)) {
+        const link1 = scrapeResault[0].url;
+        const link2 = scrapeResault[1].url;
+        if ((link2 && !link2.size) || (link1 && !link1.size)) break;
+      }
+      if (type === 'movie')
+        createDocForMovie(provider.mongoModel, scrapeResault, info);
+      if (scrapeResault.length) break;
+    }
     streams = [...streams, ...scrapeResault];
-
     nodeEnv === 'development' && console.log({ finalStreams: streams });
     return streams.sort(sortStreams);
   } catch (err) {
