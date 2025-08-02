@@ -6,8 +6,12 @@ export default async function getMkvLinks(type, customId) {
   try {
     const res = await fetch(`${this.BASE_URL}/stream/${type}/${customId}.json`);
     const data = await res.json();
-    nodeEnv === 'development' && console.log({ data });
-    const mkvLinks = await getSizeOfArrLinks(data.streams);
+    nodeEnv === 'development' && console.log({ stremas: data.streams });
+    const mkvLinks = await getSizeOfArrLinks(
+      data.streams.filter((str) => str.url),
+    );
+    console.log({ mkvLinksInGetMkvLinks: mkvLinks });
+
     return mkvLinks;
   } catch (err) {
     console.error(`Failed to get mkvLinks: ${err.message}`);

@@ -26,7 +26,6 @@ export default async function createDocForMovie(
       const expireForEmptyStr =
         releasedYear < currentYear - 1 ? undefined : 5 * day;
       nodeEnv === 'development' &&
-        nodeEnv === 'development' &&
         expireForEmptyStr &&
         console.log({
           expireIn: `${expireForEmptyStr / day} days`,
@@ -59,7 +58,6 @@ export default async function createDocForMovie(
           ? qualityExpire[quality]
           : 5 * day;
     nodeEnv === 'development' &&
-      nodeEnv === 'development' &&
       expireIn &&
       console.log({
         expireIn: `${expireIn / day} days`,

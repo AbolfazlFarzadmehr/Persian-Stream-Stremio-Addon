@@ -1,9 +1,10 @@
 import fetch from 'node-fetch';
+import { nodeEnv } from '../config.js';
 
 async function getFileSize(url) {
   try {
     const res = await fetch(url, { method: 'HEAD' });
-    if (!res.ok) throw new Error('Failed to fetch header');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const size = parseInt(res.headers.get('content-length'), 10);
     if (typeof size !== 'number')
       throw new Error('content-length is not a number');
@@ -20,8 +21,9 @@ export default async function getSizeOfArrLinks(arrLink) {
   return Promise.all(
     arrLink.map(async (strObj, i, arr) => {
       if (i === arr.length - 1) {
-        const urlToLower = strObj.url.toLowerCase();
-        if (urlToLower.includes('trailer') || urlToLower.includes('teaser'))
+        const urlToLower = strObj.url?.toLowerCase();
+        nodeEnv === 'development' && console.log({ urlToLower });
+        if (urlToLower?.includes('trailer') || urlToLower?.includes('teaser'))
           return strObj;
       }
       const size = await getFileSize(strObj.url);

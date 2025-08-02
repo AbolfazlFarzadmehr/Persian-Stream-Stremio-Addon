@@ -42,13 +42,15 @@ export default async function createStreams(
       nodeEnv === 'development' &&
         console.log(`getting streams from ${provider.name}...`);
       const mkvProviderLinks = await provider.getAllMkvLinks(info);
+      nodeEnv === 'development' && console.log({ mkvProviderLinks });
       if (mkvProviderLinks.err) continue;
       scrapeResault = setTitle(mkvProviderLinks, info);
       nodeEnv === 'development' && console.log({ scrapeResault });
       if (!iranBlockProviders.includes(provider)) {
-        const link1 = scrapeResault[0].url;
-        const link2 = scrapeResault[1].url;
-        if ((link2 && !link2.size) || (link1 && !link1.size)) break;
+        const strObj1 = scrapeResault[0];
+        const strObj2 = scrapeResault[1];
+        nodeEnv === 'development' && console.log({ strObj1, strObj2 });
+        if ((strObj2 && !strObj2.size) || (strObj1 && !strObj1.size)) continue;
       }
       if (type === 'movie')
         createDocForMovie(provider.mongoModel, scrapeResault, info);
