@@ -9,6 +9,17 @@ import iranProvider from './providers/iranProvider/iranProvider.js';
 import createDocForSeries from './utils/createDocForSeries.js';
 
 const [publicProviders, iranAccessProviders, iranBlockProviders] = providers;
+const allowedLanguage = [
+  'English',
+  'Spanish',
+  'Persian',
+  'Korean',
+  'Japanese',
+  'German',
+  'Portuguese',
+  'French',
+];
+const allowedToCreate = false;
 
 export default async function createStreams(
   type,
@@ -27,7 +38,10 @@ export default async function createStreams(
     //creating streams
     const info = await getInfo(id, type);
     nodeEnv === 'development' && console.log(info);
-
+    for (const language of info.languages || []) {
+      if (allowedLanguage.includes(language)) allowedToCreate = true;
+    }
+    if (!allowedToCreate) return streams.sort(sortStreams);
     let scrapeResault = [];
     for (const { provider } of groupedByResault.scrape) {
       nodeEnv === 'development' &&

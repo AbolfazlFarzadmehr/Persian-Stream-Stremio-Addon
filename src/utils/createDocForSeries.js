@@ -14,7 +14,6 @@ export default async function createDocForSeries(
   { imdbId, name, year, episode, season },
 ) {
   try {
-    console.log(streams[0]);
     let doc = {};
     const stremioId = `${imdbId}:${season}:${episode}`;
     const currentYear = new Date().getFullYear();
