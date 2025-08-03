@@ -9,17 +9,32 @@ import iranProvider from './providers/iranProvider/iranProvider.js';
 import createDocForSeries from './utils/createDocForSeries.js';
 
 const [publicProviders, iranAccessProviders, iranBlockProviders] = providers;
-const allowedLanguage = [
-  'English',
-  'Spanish',
-  'Persian',
-  'Korean',
-  'Japanese',
-  'German',
-  'Portuguese',
-  'French',
+const allowedCountry = [
+  'United States',
+  'United Kingdom',
+  'Spain',
+  'Canada',
+  'South Korea',
+  'Japan',
+  'Australia',
+  'Germany',
+  'France',
+  'New Zealand',
+  'Mexico',
+  'Ireland',
+  'Argentina',
+  'Colombia',
+  'Portugal',
+  'Brazil',
+  'Iran',
+  'Chile',
+  'Peru',
+  'Austria',
+  'Switzerland',
+  'Belgium',
+  'Switzerland',
 ];
-const allowedToCreate = false;
+let allowedToCreate = false;
 
 export default async function createStreams(
   type,
@@ -38,10 +53,19 @@ export default async function createStreams(
     //creating streams
     const info = await getInfo(id, type);
     nodeEnv === 'development' && console.log(info);
-    for (const language of info.languages || []) {
-      if (allowedLanguage.includes(language)) allowedToCreate = true;
+
+    for (const country of info.countries || []) {
+      if (allowedCountry.includes(country)) {
+        allowedToCreate = true;
+        break;
+      }
     }
-    if (!allowedToCreate) return streams.sort(sortStreams);
+    if (!allowedToCreate) {
+      console.error(
+        `don't srape for ${info.name} with id of ${info.imdbId} ${info.type === 'series' ? `(${info.season}:${info.episode})` : ''} from ${info.countries?.join(', ')}`,
+      );
+      return streams.sort(sortStreams);
+    }
     let scrapeResault = [];
     for (const { provider } of groupedByResault.scrape) {
       nodeEnv === 'development' &&
@@ -67,6 +91,7 @@ export default async function createStreams(
     nodeEnv === 'development' && console.log({ finalStreams: streams });
     return streams.sort(sortStreams);
   } catch (err) {
+    console.error(`Failed to create streams: ${err.message}`);
     return { err };
   }
 }

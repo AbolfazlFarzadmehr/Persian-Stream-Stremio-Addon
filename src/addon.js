@@ -57,6 +57,7 @@ nodeEnv === 'production' &&
 addon.get('/stream/:type/:id.json', async function (req, res, next) {
   const { type, id } = req.params;
   const streams = await createStreams(type, id, req.isFromIran);
+  nodeEnv === 'development' && console.log('...response ended');
   if (streams.err)
     return respond(res, {
       streams: [

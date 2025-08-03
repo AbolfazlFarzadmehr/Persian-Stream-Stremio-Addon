@@ -6,9 +6,8 @@ async function getInfo(id, type) {
   try {
     const url = `${getInfoBaseUrl}/${type}/${imdbId}.json`;
     const {
-      meta: { name, year, videos, language },
+      meta: { name, year, videos, country },
     } = await fetch(url).then((res) => res.json());
-
     const seasonsYear = videos?.length
       ? Object.groupBy(
           videos
@@ -39,11 +38,11 @@ async function getInfo(id, type) {
       imdbId,
       season,
       episode,
-      languages: language?.split(', ') || [],
+      countries: country?.split(', ') || [],
     };
   } catch (err) {
     console.error(`Failed to get info of ${type} ${id}: ${err.message}`);
-    return { err };
+    return { err, type, imdbId, season, episode };
   }
 }
 
