@@ -3,18 +3,20 @@ import { nodeEnv } from '../config.js';
 const day = 24 * 60 * 60 * 60;
 const qualityExpire = {
   bluray: undefined,
-  webdl: 10 * day,
+  webdl: 365 * day,
   webrip: 10 * day,
   hdts: 5 * day,
-  hdcam: 5 * day,
 };
-export default async function createDocForMovie(
+
+export default async function createDocForSeries(
   Model,
   streams,
-  { imdbId, year, name },
+  { imdbId, name, year, episode, season },
 ) {
   try {
+    console.log(streams[0]);
     let doc = {};
+    const stremioId = `${imdbId}:${season}:${episode}`;
     const currentYear = new Date().getFullYear();
     const releasedYear = year ? +year : currentYear + 1000;
     if (
@@ -31,7 +33,7 @@ export default async function createDocForMovie(
           expireIn: `${expireForEmptyStr / day} days`,
         });
       doc = {
-        stremioId: imdbId,
+        stremioId,
         name,
         streams,
         releasedYear,
@@ -63,7 +65,7 @@ export default async function createDocForMovie(
         expireIn: `${expireIn / day} days`,
       });
     doc = {
-      stremioId: imdbId,
+      stremioId,
       name,
       streams,
       quality,
@@ -73,7 +75,9 @@ export default async function createDocForMovie(
     nodeEnv === 'development' && console.log({ docToSave: doc });
     await Model.create(doc);
   } catch (err) {
-    console.error(`Failed to create movie document in mongoDB: ${err.message}`);
+    console.error(
+      `Failed to create series document in mongoDB: ${err.message}`,
+    );
     return { err };
   }
 }

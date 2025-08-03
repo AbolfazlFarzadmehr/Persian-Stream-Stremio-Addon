@@ -1,5 +1,5 @@
 node_modules/
 .env
-tmp.js
+tmp.*
 /src/data/firstLevelDirectories.json
 ReadMe.md

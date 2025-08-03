@@ -1,6 +1,6 @@
 {
   "name": "persian-stream",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Streams movies from Persian sources like DonyayeSerial",
   "scripts": {
     "start": "node server.js"

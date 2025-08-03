@@ -4,7 +4,7 @@ dotenv.config();
 export const mirrors = process.env.DONYAYE_SERIAL_MIRRORS?.split(',') || [];
 export const domain = process.env.DONYAYE_SERIAL_IRAN_ACC_DOMAIN || '';
 export const film2mediaBaseUrl = process.env.FILM2MEDIA_BASE_URL || '';
-export const getMetaBaseUrl = process.env.GET_META_BASE_URL || '';
+export const getInfoBaseUrl = process.env.GET_META_BASE_URL || '';
 export const port = process.env.PORT || 50080;
 export const id = process.env.ID || '';
 export const logo = process.env.LOGO || '';

@@ -1,10 +1,12 @@
 import setTitle from './utils/setTitle.js';
-import getMeta from './utils/getMeta.js';
+import getInfo from './utils/getInfo.js';
 import { nodeEnv } from './config.js';
 import providers from './providers/groupByTypeProviders.js';
 import createDocForMovie from './utils/createDocForMovie.js';
 import sortStreams from './utils/sortStreams.js';
 import getDocFromDB from './utils/getDocFromDB.js';
+import iranProvider from './providers/iranProvider/iranProvider.js';
+import createDocForSeries from './utils/createDocForSeries.js';
 
 const [publicProviders, iranAccessProviders, iranBlockProviders] = providers;
 
@@ -23,18 +25,7 @@ export default async function createStreams(
     if (!groupedByResault.scrape) return streams.sort(sortStreams);
 
     //creating streams
-    const [imdbId, season, episode] = id.split(':');
-    const {
-      meta: { name, year },
-    } = await getMeta(imdbId, type);
-    const info = {
-      name,
-      type,
-      year,
-      imdbId,
-      season,
-      episode,
-    };
+    const info = await getInfo(id, type);
     nodeEnv === 'development' && console.log(info);
 
     let scrapeResault = [];
@@ -54,6 +45,8 @@ export default async function createStreams(
       }
       if (type === 'movie')
         createDocForMovie(provider.mongoModel, scrapeResault, info);
+      else if (provider === iranProvider)
+        createDocForSeries(iranProvider.mongoModel, scrapeResault, info);
       if (scrapeResault.length) break;
     }
     streams = [...streams, ...scrapeResault];

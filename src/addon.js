@@ -62,7 +62,7 @@ addon.get('/stream/:type/:id.json', async function (req, res, next) {
       streams: [
         {
           title: '❌ There was an error in getting streams. please try again.',
-          url: '',
+          url: 'https://example.com/streams.mkv',
         },
       ],
     });
