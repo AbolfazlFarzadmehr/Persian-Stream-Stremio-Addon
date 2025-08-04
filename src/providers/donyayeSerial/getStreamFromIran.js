@@ -1,20 +1,14 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { readFile } from 'fs/promises';
-import { mirrors, domain } from '../../config.js';
+import { mirrors, domain, nodeEnv } from '../../config.js';
 import formatTitleForFilename from '../../utils/formatTitleForFilename.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const filePath = `${__dirname}/../../data/firstLevelDirectories.json`;
-export default async function getStreamFromIran({
-  name,
-  type,
-  year,
-  imdbId,
-  season,
-  episode,
-}) {
+export default async function getStreamFromIran(info) {
   try {
+    const { name, type, year, imdbId, season, episode } = info;
     const fileData = await readFile(filePath, 'utf-8');
     const directories = JSON.parse(fileData);
     const formattedTitle = formatTitleForFilename(name);
@@ -48,10 +42,18 @@ export default async function getStreamFromIran({
         .map(({ path }) => path);
     }
     const mkvLinksUnflat = await Promise.all(
-      condidatePaths.map((path) => this.mkvFinder(path, type, season, episode)),
+      condidatePaths.map((path) => this.mkvFinder(path, type)),
     );
     const mkvLinks = mkvLinksUnflat.flat(2);
-    return mkvLinks;
+    if (type === 'movie') return mkvLinks;
+    const docPerId = await this.prepareDocs(info, mkvLinks);
+    nodeEnv === 'development' && console.log({ docPerId });
+    await this.insertAllDocs(docPerId);
+    return {
+      readyToReturn: true,
+      streams: docPerId[`${imdbId}:${season}:${episode}`].streams,
+      provider: this.provider,
+    };
   } catch (err) {
     console.error(`Failed to get Streams in iranAccess: ${err.message}`);
     return { err };

@@ -1,4 +1,5 @@
 import { nodeEnv } from '../config.js';
+import iranProvider from '../providers/iranProvider/iranProvider.js';
 
 const day = 24 * 60 * 60 * 60;
 const qualityExpire = {
@@ -14,6 +15,8 @@ export default async function createDocForSeries(
   { imdbId, name, year, episode, season },
 ) {
   try {
+    const detemineReturn = async (doc) =>
+      Model === iranProvider.mongoModel ? await Model.create(doc) : doc;
     let doc = {};
     const stremioId = `${imdbId}:${season}:${episode}`;
     const currentYear = new Date().getFullYear();
@@ -41,7 +44,7 @@ export default async function createDocForSeries(
           : undefined,
       };
       nodeEnv === 'development' && console.log({ docToSave: doc });
-      return await Model.create(doc);
+      return detemineReturn(doc);
     }
     const title1 = streams[0]?.title.toLowerCase().replace(/[^a-z]/g, '') || '';
     const title2 = streams[1]?.title.toLowerCase().replace(/[^a-z]/g, '') || '';
@@ -72,7 +75,7 @@ export default async function createDocForSeries(
       expireAt: expireIn ? Date.now() + expireIn : undefined,
     };
     nodeEnv === 'development' && console.log({ docToSave: doc });
-    await Model.create(doc);
+    return detemineReturn(doc);
   } catch (err) {
     console.error(
       `Failed to create series document in mongoDB: ${err.message}`,

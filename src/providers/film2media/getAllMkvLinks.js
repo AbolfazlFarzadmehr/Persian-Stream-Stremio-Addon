@@ -5,7 +5,6 @@ import {
   proxySecret,
 } from '../../config.js';
 import getSizeOfArrLinks from '../../utils/getFileSize.js';
-import providers from '../groupByTypeProviders.js';
 
 export default async function getAllMkvLinks({
   type,

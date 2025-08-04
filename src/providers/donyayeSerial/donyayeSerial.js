@@ -8,6 +8,8 @@ import mkvFinder from './mkvFinder.js';
 import pingPath from './pingPath.js';
 import Provider from '../Provider.js';
 import { DonyayeSerial } from '../../models/providersModels.js';
+import prepareDocs from './prepareDocs.js';
+import insertAllDocs from './insertAllDocs.js';
 
 const methods = {
   getAllMkvLinks,
@@ -17,6 +19,8 @@ const methods = {
   getMkvsFromAbroad,
   pingPath,
   mkvFinder,
+  prepareDocs,
+  insertAllDocs,
 };
 
 const donyayeSeryal = new Provider(

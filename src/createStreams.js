@@ -73,6 +73,8 @@ export default async function createStreams(
       const mkvProviderLinks = await provider.getAllMkvLinks(info);
       nodeEnv === 'development' && console.log({ mkvProviderLinks });
       if (mkvProviderLinks.err) continue;
+      if (mkvProviderLinks.readyToReturn)
+        return [...streams, ...mkvProviderLinks.streams].sort(sortStreams);
       scrapeResault = setTitle(mkvProviderLinks, info);
       nodeEnv === 'development' && console.log({ scrapeResault });
       if (!iranBlockProviders.includes(provider)) {
