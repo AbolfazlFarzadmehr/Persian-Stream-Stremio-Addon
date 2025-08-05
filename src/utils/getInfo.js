@@ -2,6 +2,8 @@ import { getInfoBaseUrl } from '../config.js';
 
 async function getInfo(id, type) {
   const [imdbId, season, episode] = id.split(':');
+  if (season === '0') throw new Error('invalid season number');
+  if (episode === '0') throw new Error('invalid episode number');
   const isSeries = type === 'series';
   try {
     const url = `${getInfoBaseUrl}/${type}/${imdbId}.json`;
