@@ -5,10 +5,18 @@ import setTitle from './setTitle.js';
 import sortStreams from './sortStreams.js';
 
 export default async function prepareDocs(
-  { name, type, year, imdbId, season },
+  { name, type, imdbId, seasonsYear },
   mkvObjs,
   provider,
 ) {
+  const episodesYears = {};
+  Object.values(seasonsYear)
+    .flat()
+    .forEach(
+      ({ season, episode, releasedYear, firstAired }) =>
+        (episodesYears[`${imdbId}:${season}:${episode}`] =
+          releasedYear || firstAired),
+    );
   const streamPerId = Object.groupBy(mkvObjs, ({ url }) => {
     const seasonTitleKey = url
       .split('.')
@@ -26,20 +34,15 @@ export default async function prepareDocs(
       ? `${imdbId}:${seasonTitleKey}`
       : trailerTitleKey || 'Unknown';
   });
-  let lastSeason = '0';
-  let lastYear = year;
+  Object.keys(episodesYears).forEach((id) => {
+    if (!streamPerId[id]) streamPerId[id] = [];
+  });
   for (const id of Object.keys(streamPerId)) {
     const [imdbId, season, episode] = id.split(':');
-    const { year: _year } =
-      provider.name === film2Media.name && season && lastSeason !== season
-        ? await getInfo(id, type)
-        : { year: lastYear };
-    lastSeason = season;
-    lastYear = _year;
     const _info = {
       name,
       type,
-      year: _year,
+      year: episodesYears[id],
       imdbId,
       season,
       episode,

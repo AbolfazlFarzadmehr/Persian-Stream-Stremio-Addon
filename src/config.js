@@ -21,4 +21,5 @@ export const dataBase = process.env.DATABASE;
 export const dataBasePassword = process.env.DATABASE_PASSWORD;
 export const proxyBaseUrl = process.env.PROXY_BASE_URL;
 export const film2mediaProxyPath = process.env.FILM2MEDIA_PROXY_PATH;
+export const donyayeSerialProxyPath = process.env.DONYAYE_SERIAL_PROXY_PATH;
 export const proxySecret = process.env.PROXY_SECRET;

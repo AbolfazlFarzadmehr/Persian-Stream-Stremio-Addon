@@ -41,6 +41,7 @@ async function getInfo(id, type) {
       season,
       episode,
       countries: country?.split(', ') || [],
+      seasonsYear,
     };
   } catch (err) {
     console.error(`Failed to get info of ${type} ${id}: ${err.message}`);

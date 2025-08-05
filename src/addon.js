@@ -38,7 +38,7 @@ addon.param('type', function (req, res, next, val) {
 });
 
 addon.param('id', function (req, res, next, val) {
-  if (req.params.id.startsWith(manifest.idPrefixes)) {
+  if (req.params.id.startsWith(manifest.idPrefixes[0])) {
     next();
   } else {
     next('Unsupported type ' + val);
