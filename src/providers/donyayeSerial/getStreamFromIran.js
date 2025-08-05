@@ -3,9 +3,13 @@ import path from 'path';
 import { readFile } from 'fs/promises';
 import { mirrors, domain, nodeEnv } from '../../config.js';
 import formatTitleForFilename from '../../utils/formatTitleForFilename.js';
+import prepareDocs from '../../utils/prepareDocs.js';
+import insertAllDocs from '../../utils/insertAllDocs.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const filePath = `${__dirname}/../../data/firstLevelDirectories.json`;
+
 export default async function getStreamFromIran(info) {
   try {
     const { name, type, year, imdbId, season, episode } = info;
@@ -46,13 +50,13 @@ export default async function getStreamFromIran(info) {
     );
     const mkvLinks = mkvLinksUnflat.flat(2);
     if (type === 'movie') return mkvLinks;
-    const docPerId = await this.prepareDocs(info, mkvLinks);
+    const docPerId = await prepareDocs(info, mkvLinks, this);
     nodeEnv === 'development' && console.log({ docPerId });
-    await this.insertAllDocs(docPerId);
+    await insertAllDocs(docPerId, this.mongoModel);
     return {
       readyToReturn: true,
       streams: docPerId[`${imdbId}:${season}:${episode}`].streams,
-      provider: this.provider,
+      provider: this.name,
     };
   } catch (err) {
     console.error(`Failed to get Streams in iranAccess: ${err.message}`);

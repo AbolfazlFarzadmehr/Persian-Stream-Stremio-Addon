@@ -7,6 +7,7 @@ export default async function getMkvLinks(type, customId) {
     const res = await fetch(`${this.BASE_URL}/stream/${type}/${customId}.json`);
     const data = await res.json();
     nodeEnv === 'development' && console.log({ stremas: data.streams });
+    if (!data.streams) throw new Error('data.streams is undefinded');
     const mkvLinks = await getSizeOfArrLinks(
       data.streams.filter((str) => str.url),
     );
@@ -15,7 +16,9 @@ export default async function getMkvLinks(type, customId) {
 
     return mkvLinks;
   } catch (err) {
-    console.error(`Failed to get mkvLinks: ${err.message}`);
+    console.error(
+      `Failed to get mkvLinks for ${customId} in iranProvider.getMkvlinks: ${err.message}`,
+    );
     return { err };
   }
 }

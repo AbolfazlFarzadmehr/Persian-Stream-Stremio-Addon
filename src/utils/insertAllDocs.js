@@ -1,9 +1,9 @@
-import { nodeEnv } from '../../config';
+import { nodeEnv } from '../config.js';
 
-export default async function insertAllDocs(docPerId) {
+export default async function insertAllDocs(docPerId, Model) {
   const documents = Object.values(docPerId);
   try {
-    const result = await this.mongoModel.insertMany(documents, {
+    const result = await Model.insertMany(documents, {
       ordered: false,
     });
     nodeEnv === 'development' &&
