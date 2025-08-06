@@ -11,28 +11,29 @@ async function getInfo(id, type) {
       meta: { name, year, videos, country },
     } = await fetch(url).then((res) => res.json());
     const seasonsYear = videos?.length
-      ? Object.groupBy(
-          videos
-            .map(({ season, episode, released, firstAired }) => ({
-              season,
-              episode,
-              released: new Date(released).getFullYear(),
-              firstAired: new Date(firstAired).getFullYear(),
-            }))
-            .filter(({ released, season }) => released && season > 0),
-          ({ season }) => season,
-        )
+      ? videos
+          .map(({ season, episode, number, released, firstAired }) => ({
+            season,
+            number,
+            episode,
+            released: new Date(released)?.getFullYear(),
+            firstAired: new Date(firstAired)?.getFullYear(),
+          }))
+          .filter(({ season }) => season > 0)
       : undefined;
-
     if (isSeries && !seasonsYear) throw new Error(`SeasonsYear is undefined`);
-    const episodeYearObj = isSeries
-      ? seasonsYear[season][episode - 1] || seasonsYear[season][1]
-      : undefined;
-    if (isSeries && !episodeYearObj)
-      throw new Error(`episodeYearObj is undefined`);
-    const releasedYear = isSeries
-      ? episodeYearObj.released || episodeYearObj.firstAired
-      : undefined;
+    else if (isSeries && !seasonsYear.length)
+      throw new Error(`SeasonsYear is empty`);
+    const episodesYears = {};
+    if (isSeries)
+      seasonsYear.forEach(
+        ({ season, episode, number, releasedYear, firstAired }) =>
+          (episodesYears[`${imdbId}:${season}:${episode || number}`] =
+            releasedYear || firstAired),
+      );
+    if (isSeries && !episodesYears.length)
+      throw new Error(`episodesYears is empty`);
+    const releasedYear = isSeries ? episodesYears[id] : undefined;
     return {
       name,
       type,
@@ -41,7 +42,7 @@ async function getInfo(id, type) {
       season,
       episode,
       countries: country?.split(', ') || [],
-      seasonsYear,
+      episodesYears: type === 'movie' ? undefined : episodesYears,
     };
   } catch (err) {
     console.error(`Failed to get info of ${type} ${id}: ${err.message}`);

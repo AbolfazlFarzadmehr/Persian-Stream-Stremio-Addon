@@ -5,18 +5,10 @@ import setTitle from './setTitle.js';
 import sortStreams from './sortStreams.js';
 
 export default async function prepareDocs(
-  { name, type, imdbId, seasonsYear },
+  { name, type, imdbId, episodesYears },
   mkvObjs,
   provider,
 ) {
-  const episodesYears = {};
-  Object.values(seasonsYear)
-    .flat()
-    .forEach(
-      ({ season, episode, releasedYear, firstAired }) =>
-        (episodesYears[`${imdbId}:${season}:${episode}`] =
-          releasedYear || firstAired),
-    );
   const streamPerId = Object.groupBy(mkvObjs, ({ url }) => {
     const seasonTitleKey = url
       .split('.')
