@@ -27,11 +27,12 @@ async function getInfo(id, type) {
     const episodesYears = {};
     if (isSeries)
       seasonsYear.forEach(
-        ({ season, episode, number, releasedYear, firstAired }) =>
-          (episodesYears[`${imdbId}:${season}:${episode || number}`] =
-            releasedYear || firstAired),
+        ({ season, episode, number, releasedYear, firstAired }) => {
+          episodesYears[`${imdbId}:${season}:${episode || number}`] =
+            releasedYear || firstAired;
+        },
       );
-    if (isSeries && !episodesYears.length)
+    if (isSeries && !Object.keys(episodesYears).length)
       throw new Error(`episodesYears is empty`);
     const releasedYear = isSeries ? episodesYears[id] : undefined;
     return {
