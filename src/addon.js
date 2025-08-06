@@ -1,10 +1,24 @@
 import express from 'express';
-import { id, logo, name, version, description, nodeEnv } from './config.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import {
+  id,
+  logo,
+  name,
+  version,
+  description,
+  nodeEnv,
+  serverUrl,
+} from './config.js';
 import createStreams from './createStreams.js';
 import isFromIran from './utils/isFromIran.js';
 
 const addon = express();
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+addon.set('view engine', 'pug');
+addon.set('views', path.join(__dirname, 'views'));
+addon.use(express.static(path.join(__dirname, '../public')));
 // Docs: https://github.com/Stremio/stremio-addon-sdk/blob/master/docs/api/responses/manifest.md
 const manifest = {
   id,
@@ -24,6 +38,12 @@ const respond = function (res, data) {
   res.setHeader('Content-Type', 'application/json');
   res.send(data);
 };
+
+addon.get('/', function (req, res) {
+  res
+    .status(200)
+    .render('index', { logo, name, version, description, serverUrl });
+});
 
 addon.get('/manifest.json', function (req, res) {
   respond(res, manifest);

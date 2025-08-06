@@ -1,6 +1,6 @@
 {
   "name": "persian-stream",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Streams movies from Persian sources like DonyayeSerial",
   "scripts": {
     "start": "node server.js"
@@ -13,6 +13,7 @@
     "mongoose": "^8.17.0",
     "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
+    "pug": "^3.0.3",
     "stremio-addon-sdk": "^1.6.10"
   },
   "devDependencies": {
