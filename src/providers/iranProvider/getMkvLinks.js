@@ -13,7 +13,7 @@ export default async function getMkvLinks(type, customId) {
     );
     nodeEnv === 'development' &&
       console.log({ mkvLinksInGetMkvLinks: mkvLinks });
-
+    if (mkvLinks.err) throw new Error(sizeAdded.err.message);
     return mkvLinks;
   } catch (err) {
     console.error(

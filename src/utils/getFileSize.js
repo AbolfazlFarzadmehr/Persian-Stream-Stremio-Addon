@@ -31,7 +31,8 @@ export default async function getSizeOfArrLinks(arrLink) {
             return strObj;
         }
         const size = await getFileSize(strObj.url);
-        if (!size || size.err) return strObj;
+        if (!size) return strObj;
+        if (size.err) throw new Error(size.err.message);
         return {
           ...strObj,
           size,

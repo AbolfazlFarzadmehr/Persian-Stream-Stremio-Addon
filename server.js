@@ -4,11 +4,11 @@
 import { port, serverUrl, dataBase, dataBasePassword } from './src/config.js';
 import mongoose from 'mongoose';
 import addon from './src/addon.js';
-// import './src/providers/donyaye-serial/getFirstLevelDir.js';
+import './src/providers/donyayeSerial/getFirstLevelDir.js';
 
-process.on('uncaughtExeption', (err) => {
+process.on('uncaughtException', (err) => {
   console.log(err.name, err.message);
-  console.log('UNCAUGHT EXEPTION! SHUTING DOWN...');
+  console.log('UNCAUGHT EXCEPTION! SHUTING DOWN...');
   process.exit(1);
 });
 
@@ -40,6 +40,6 @@ const server = addon.listen(port, () =>
 
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
-  console.log('UNHANDELD REGECTION! SHUTING DOWN...');
+  console.log('UNHANDELD REJECTION! SHUTING DOWN...');
   server.close(() => process.exit(1));
 });

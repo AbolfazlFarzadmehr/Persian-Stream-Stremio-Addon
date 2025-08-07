@@ -24,6 +24,7 @@ export default async function getAllMkvLinks(info) {
     nodeEnv === 'development' && console.log({ data });
     if (data.err) throw new Error(data.err?.message || 'request failed');
     const sizeAdded = await getSizeOfArrLinks(data.mkvLinks);
+    if (sizeAdded.err) throw new Error(sizeAdded.err.message);
     if (type === 'movie') return { mkvLinks: sizeAdded, provider: this.name };
     const docPerId = await prepareDocs(info, sizeAdded, this);
     nodeEnv === 'development' && console.log({ docPerId });
