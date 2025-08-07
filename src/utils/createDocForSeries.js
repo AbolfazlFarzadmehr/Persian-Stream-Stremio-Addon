@@ -1,7 +1,7 @@
 import { nodeEnv } from '../config.js';
 import iranProvider from '../providers/iranProvider/iranProvider.js';
 
-const day = 24 * 60 * 60 * 60;
+const day = 24 * 60 * 60 * 1000;
 const qualityExpire = {
   bluray: undefined,
   webdl: 365 * day,
@@ -28,7 +28,11 @@ export default async function createDocForSeries(
           streams[0].title.toLowerCase().includes('teaser')))
     ) {
       const expireForEmptyStr =
-        releasedYear < currentYear - 1 ? undefined : 5 * day;
+        Model === iranProvider.mongoModel
+          ? 5 * day
+          : releasedYear < currentYear - 1
+            ? undefined
+            : 5 * day;
       nodeEnv === 'development' &&
         expireForEmptyStr &&
         console.log({
@@ -40,7 +44,7 @@ export default async function createDocForSeries(
         streams,
         releasedYear,
         expireAt: expireForEmptyStr
-          ? Date.now() + expireForEmptyStr
+          ? new Date(Date.now() + expireForEmptyStr)
           : undefined,
       };
       nodeEnv === 'development' && console.log({ docToSave: doc });
@@ -72,7 +76,7 @@ export default async function createDocForSeries(
       streams,
       quality,
       releasedYear,
-      expireAt: expireIn ? Date.now() + expireIn : undefined,
+      expireAt: expireIn ? new Date(Date.now() + expireIn) : undefined,
     };
     nodeEnv === 'development' && console.log({ docToSave: doc });
     return detemineReturn(doc);

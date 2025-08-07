@@ -1,6 +1,6 @@
 import { nodeEnv } from '../config.js';
 
-const day = 24 * 60 * 60 * 60;
+const day = 24 * 60 * 60 * 1000;
 const qualityExpire = {
   bluray: undefined,
   webdl: 10 * day,
@@ -23,10 +23,8 @@ export default async function createDocForMovie(
         (streams[0].title.toLowerCase().includes('trailer') ||
           streams[0].title.toLowerCase().includes('teaser')))
     ) {
-      const expireForEmptyStr =
-        releasedYear < currentYear - 1 ? undefined : 5 * day;
+      const expireForEmptyStr = 5 * day;
       nodeEnv === 'development' &&
-        expireForEmptyStr &&
         console.log({
           expireIn: `${expireForEmptyStr / day} days`,
         });
@@ -35,9 +33,7 @@ export default async function createDocForMovie(
         name,
         streams,
         releasedYear,
-        expireAt: expireForEmptyStr
-          ? Date.now() + expireForEmptyStr
-          : undefined,
+        expireAt: new Date(Date.now() + expireForEmptyStr),
       };
       nodeEnv === 'development' && console.log({ docToSave: doc });
       return await Model.create(doc);
@@ -68,7 +64,7 @@ export default async function createDocForMovie(
       streams,
       quality,
       releasedYear,
-      expireAt: expireIn ? Date.now() + expireIn : undefined,
+      expireAt: expireIn ? new Date(Date.now() + expireIn) : undefined,
     };
     nodeEnv === 'development' && console.log({ docToSave: doc });
     await Model.create(doc);

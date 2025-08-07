@@ -1,5 +1,6 @@
 const allowedCountry = [
   'United States',
+  'USA',
   'United Kingdom',
   'Spain',
   'Canada',

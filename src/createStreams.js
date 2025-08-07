@@ -21,6 +21,7 @@ export default async function createStreams(
     //checking database
     const groupedByResault = await getDocFromDB(reqFromIran, id);
     nodeEnv === 'development' && console.log(groupedByResault);
+    if (groupedByResault.err) throw new Error(groupedByResault.err?.message);
 
     let streams =
       groupedByResault.complite?.flatMap(({ doc }) => doc.streams) || [];
