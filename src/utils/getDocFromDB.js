@@ -15,6 +15,7 @@ async function findDoc(provider, stremioId) {
 export default async function getDocFromDB(reqFromIran, stremioId) {
   try {
     const geoProviders = setGeoProvider(reqFromIran);
+    const currentYear = new Date().getFullYear();
     const resault = await Promise.all(
       [
         geoProviders.map((p) => findDoc(p, stremioId)),
@@ -29,18 +30,37 @@ export default async function getDocFromDB(reqFromIran, stremioId) {
     if (groupedByResault.complite)
       for (const { doc, provider } of groupedByResault.complite) {
         if (
-          (!stremioId.includes(':') || provider.name === 'Iran-provider') &&
-          !doc.streams.length
-        ) {
-          await provider.mongoModel.updateOne(
-            { _id: doc._id },
-            { $set: { expireAt: new Date(Date.now() + 5 * day) } },
-          );
-          nodeEnv === 'development' &&
-            console.log(
-              `✅ add 5 days succesfully to ${doc.name} in ${provider.name} collection.`,
+          !doc.streams.length &&
+          (doc?.releasedYear !== currentYear - 1 ||
+            doc?.releasedYear !== currentYear)
+        )
+          if (!stremioId.includes(':') || provider.name === 'Iran-provider') {
+            await provider.mongoModel.updateOne(
+              { _id: doc._id },
+              { $set: { expireAt: new Date(Date.now() + 5 * day) } },
             );
-        }
+            nodeEnv === 'development' &&
+              console.log(
+                `✅ add 5 days succesfully to ${doc.name} in ${provider.name} collection.`,
+              );
+          } else if (doc.emptySeason) {
+            const id =
+              provider.name === 'film2media'
+                ? stremioId
+                : doc.stremioId.replace(/:[^:]*$/, '');
+            await provider.mongoModel.updateMany(
+              {
+                stremioId: {
+                  $regex: new RegExp(`^${id}`),
+                },
+              },
+              { $set: { expireAt: new Date(Date.now() + 5 * day) } },
+            );
+            nodeEnv === 'development' &&
+              console.log(
+                `✅ add 5 days succesfully to all of the docs with name of ${doc.name} in ${provider.name} collection.`,
+              );
+          }
       }
 
     return groupedByResault;

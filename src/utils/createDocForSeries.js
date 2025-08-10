@@ -13,6 +13,7 @@ export default async function createDocForSeries(
   Model,
   streams,
   { imdbId, name, year, episode, season },
+  emptySeason = false,
 ) {
   try {
     const detemineReturn = async (doc) =>
@@ -28,11 +29,11 @@ export default async function createDocForSeries(
           streams[0].title.toLowerCase().includes('teaser')))
     ) {
       const expireForEmptyStr =
-        Model === iranProvider.mongoModel
+        emptySeason ||
+        Model === iranProvider.mongoModel ||
+        releasedYear >= currentYear - 1
           ? 5 * day
-          : releasedYear < currentYear - 1
-            ? undefined
-            : 5 * day;
+          : undefined;
       nodeEnv === 'development' &&
         expireForEmptyStr &&
         console.log({
@@ -46,6 +47,7 @@ export default async function createDocForSeries(
         expireAt: expireForEmptyStr
           ? new Date(Date.now() + expireForEmptyStr)
           : undefined,
+        emptySeason,
       };
       nodeEnv === 'development' && console.log({ docToSave: doc });
       return detemineReturn(doc);

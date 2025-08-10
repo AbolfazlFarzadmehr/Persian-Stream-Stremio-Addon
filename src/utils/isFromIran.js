@@ -1,10 +1,10 @@
-import { ipApiUrl, ipApiFields } from '../config.js';
+import { ipApiUrl, ipApiFields, showCliIp } from '../config.js';
 
 export default async function isFromIran(ip) {
   try {
     const geoRes = await fetch(`${ipApiUrl}/${ip}?fields=${ipApiFields}`);
     const data = await geoRes.json();
-    console.log(`Client ip: ${ip} (${data.country})`);
+    showCliIp === 'true' && console.log(`Client ip: ${ip} (${data.country})`);
     return data.countryCode === 'IR';
   } catch (err) {
     console.error(`failed to detect the location of the ${ip}: ${err.message}`);

@@ -42,6 +42,7 @@ const stremioDocShema = new mongoose.Schema({
     default: undefined,
     index: { expires: 0 },
   },
+  emptySeason: Boolean,
 });
 
 export default stremioDocShema;
