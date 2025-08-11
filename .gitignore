@@ -2,4 +2,4 @@ node_modules/
 .env
 tmp.*
 /src/data/firstLevelDirectories.json
-ReadMe.md
+mds/
